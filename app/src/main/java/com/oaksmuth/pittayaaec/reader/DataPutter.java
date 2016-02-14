@@ -19,7 +19,7 @@ import io.realm.Realm;
  * Created by Oak on 14/2/2559.
  */
 public class DataPutter extends AsyncTask<Context, Integer, String> {
-    private static final String BASIC_DATA_NAME = "basiclist.dat";
+    private static final String BASIC_DATA_NAME = "basicdata.dat";
     private static final String ADVANCED_DATA_NAME = "";
     public static int progress = 0;
 

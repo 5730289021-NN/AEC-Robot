@@ -12,7 +12,6 @@ import io.realm.annotations.Required;
 public class Basic extends RealmObject{
     @PrimaryKey
     private int id;
-    @Required
     private int no;
     private String topic;
     private String question;

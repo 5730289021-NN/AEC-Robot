@@ -28,7 +28,7 @@
                 android:layout_height="match_parent"
                 android:paddingTop="10sp"
                 android:orientation="vertical"
-                tools:context=".RealmIntroExample"/>
+                tools:context=".tester.Test"/>
         </LinearLayout>
     </ScrollView>
 
