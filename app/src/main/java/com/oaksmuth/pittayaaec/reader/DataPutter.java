@@ -3,6 +3,7 @@ package com.oaksmuth.pittayaaec.reader;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.oaksmuth.pittayaaec.database.Basic;
@@ -31,6 +32,7 @@ public class DataPutter extends AsyncTask<Context, Integer, String> {
             in = new Scanner(context[0].getAssets().open(BASIC_DATA_NAME)).useDelimiter("\t");
         } catch (IOException e) {
             e.printStackTrace();
+            Log.e("66",e.getMessage());
             return "failed";
         }
         while (in.hasNextLine()) {
