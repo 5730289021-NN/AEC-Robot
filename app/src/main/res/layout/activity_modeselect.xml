@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="8dp"
+    >
+
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/catalogCard"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        card_view:cardBackgroundColor="#00BCD4"
+        android:layout_height="200dp"
+        android:elevation="5dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        card_view:cardCornerRadius="4dp">
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="50dp"
+            android:src="@drawable/ic_library_books_white_48dp"
+            android:id="@+id/CatalogImageView"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="175dp"
+            android:textSize="48sp"
+            android:text="Catalog"/>
+
+    </android.support.v7.widget.CardView>
+
+
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/askCard"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_marginTop="8dp"
+        android:layout_height="200dp"
+        android:elevation="5dp"
+        card_view:cardBackgroundColor="#8BC34A"
+        card_view:cardCornerRadius="4dp"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:clickable="true">
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="50dp"
+            android:src="@drawable/ic_textsms_white_48dp"
+            android:id="@+id/AskImageView" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="175dp"
+            android:textSize="48sp"
+            android:text="Ask"/>
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

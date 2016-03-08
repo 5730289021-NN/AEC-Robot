@@ -8,7 +8,6 @@ import com.orm.SugarRecord;
 public class Data extends SugarRecord {
     //ID	Topic	Subtopic	Number	Question	Answer	English 1	Thai 1	English 2	Thai 2	English 3	Thai 3	English 4	Thai 4	English 5	Thai 5
     private long ID;
-
     public Long getId() {
         return ID;
     }
