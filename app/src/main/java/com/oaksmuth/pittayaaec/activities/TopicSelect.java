@@ -2,11 +2,14 @@ package com.oaksmuth.pittayaaec.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.oaksmuth.pittayaaec.R;
+import com.oaksmuth.pittayaaec.data.TwoTextArrayAdapter;
 import com.orm.SugarRecord;
 
 import java.util.ArrayList;
@@ -20,68 +23,85 @@ import java.util.List;
 
 
 public class TopicSelect extends AppCompatActivity {
-    public class Topic extends SugarRecord {
+    private static final String tb_name = "alldata";
+
+    public class TopicHeader extends SugarRecord {
         String Topic;
+        String SubTopics;
+    }
+    public class Advanced{
+        public static final boolean TOPIC = true;
+        public static final boolean HEADER = false;
+        public String sentence;
+        public boolean type;
+
+        public Advanced(boolean type,String sentence){
+            this.type = type;
+            this.sentence = sentence;
+        }
+
+        @Override
+        public String toString() {
+            return sentence;
+        }
+
+        public int getViewType() {
+            if(type){
+                return TwoTextArrayAdapter.RowType.LIST_ITEM.ordinal();
+            }
+            else {
+                return TwoTextArrayAdapter.RowType.HEADER_ITEM.ordinal();
+            }
+        }
+
+        public View getView(LayoutInflater inflater, View convertView) {
+            View view;
+            TextView text;
+            if(type) {
+                if (convertView == null) {
+                    view = (View) inflater.inflate(R.layout.topic, null);
+                } else {
+                    view = convertView;
+                }
+                text = (TextView) view.findViewById(R.id.topicTextView);
+            }else {
+                if (convertView == null) {
+                    view = (View) inflater.inflate(R.layout.header, null);
+                } else {
+                    view = convertView;
+                }
+                text = (TextView) view.findViewById(R.id.separator);
+            }
+            text.setText(sentence);
+            return view;
+        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_catalog);
-        List<Topic> topics = Topic.findWithQuery(Topic.class, "SELECT DISTINCT Topic FROM alldata");
-        ArrayList<String> stringTopics = new ArrayList<>();
-        for(Topic topic : topics)
+        List<TopicHeader> topics = TopicHeader.findWithQuery(TopicHeader.class, "SELECT DISTINCT Topic,SubTopic FROM " + tb_name);
+        ArrayList<Advanced> advancedTopics = new ArrayList<>();
+        boolean newTopic = false;
+        String header = "";
+        for(int i = 0;i < topics.size(); i++)
         {
-            stringTopics.add(topic.Topic);
+            if(advancedTopics.isEmpty() || !topics.get(i).Topic.equals(topics.get(i-1).Topic)) {
+                header = topics.get(i).Topic;
+                advancedTopics.add(new Advanced(Advanced.HEADER, topics.get(i).Topic));
+                advancedTopics.add(new Advanced(Advanced.TOPIC, topics.get(i).SubTopics));
+            }
+            else
+            {
+                advancedTopics.add(new Advanced(Advanced.TOPIC, topics.get(i).SubTopics));
+            }
         }
         TextView textView = (TextView) findViewById(R.id.CatalogtextView);
         ListView catalogList = (ListView) findViewById(R.id.CataloglistView);
         textView.setText("Select Topic");
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stringTopics);
+        TwoTextArrayAdapter adapter = new TwoTextArrayAdapter(getApplicationContext(), advancedTopics);
         catalogList.setAdapter(adapter);
     }
 
 }
-
-/*
-*package com.oaksmuth.pittayaaecrobot;
-
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
-
-import java.util.ArrayList;
-
-
-public class CatalogActivity extends AppCompatActivity {
-    private ArrayList<String> basicList;
-    private ArrayList<Advanced> advancedList;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_catalog);
-        basicList = Splash.data.basicList;
-        advancedList = Splash.data.advancedList;
-        TextView textView = (TextView) findViewById(R.id.CatalogtextView);
-        ListView catalogList = (ListView) findViewById(R.id.CataloglistView);
-        Intent intent = getIntent();
-        if(intent.getStringExtra("Level").equals("0"))//Basic
-        {
-            textView.setText("The Basic Level");
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, basicList);
-            catalogList.setAdapter(adapter);
-        }
-        else if(intent.getStringExtra("Level").equals("1"))//Advanced
-        {
-            textView.setText("The Advanced Level");
-            TwoTextArrayAdapter adapter = new TwoTextArrayAdapter(getApplicationContext(), advancedList);
-            catalogList.setAdapter(adapter);
-        }
-
-    }
-}
- */
