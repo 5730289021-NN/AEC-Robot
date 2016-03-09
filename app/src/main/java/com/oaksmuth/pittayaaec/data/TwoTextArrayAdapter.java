@@ -13,14 +13,14 @@ import java.util.List;
 /**
  * Created by noraw on 9/3/2559.
  */
-public class TwoTextArrayAdapter extends ArrayAdapter<TopicSelect.Advanced> {
+public class TwoTextArrayAdapter extends ArrayAdapter<Advanced> {
     private LayoutInflater mInflater;
 
     public enum RowType {
         LIST_ITEM, HEADER_ITEM
     }
 
-    public TwoTextArrayAdapter(Context context, List<TopicSelect.Advanced> items) {
+    public TwoTextArrayAdapter(Context context, List<Advanced> items) {
         super(context, 0, items);
         mInflater = LayoutInflater.from(context);
     }

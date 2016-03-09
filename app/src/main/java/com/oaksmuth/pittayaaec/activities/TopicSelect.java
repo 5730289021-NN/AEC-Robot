@@ -1,15 +1,18 @@
 package com.oaksmuth.pittayaaec.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.oaksmuth.pittayaaec.R;
+import com.oaksmuth.pittayaaec.data.Advanced;
 import com.oaksmuth.pittayaaec.data.TwoTextArrayAdapter;
+import com.orm.SugarContext;
 import com.orm.SugarRecord;
 
 import java.util.ArrayList;
@@ -23,65 +26,19 @@ import java.util.List;
 
 
 public class TopicSelect extends AppCompatActivity {
-    private static final String tb_name = "alldata";
+    private static final String tb_name = "sqlite_sequence";
 
     public class TopicHeader extends SugarRecord {
         String Topic;
         String SubTopics;
     }
-    public class Advanced{
-        public static final boolean TOPIC = true;
-        public static final boolean HEADER = false;
-        public String sentence;
-        public boolean type;
-
-        public Advanced(boolean type,String sentence){
-            this.type = type;
-            this.sentence = sentence;
-        }
-
-        @Override
-        public String toString() {
-            return sentence;
-        }
-
-        public int getViewType() {
-            if(type){
-                return TwoTextArrayAdapter.RowType.LIST_ITEM.ordinal();
-            }
-            else {
-                return TwoTextArrayAdapter.RowType.HEADER_ITEM.ordinal();
-            }
-        }
-
-        public View getView(LayoutInflater inflater, View convertView) {
-            View view;
-            TextView text;
-            if(type) {
-                if (convertView == null) {
-                    view = (View) inflater.inflate(R.layout.topic, null);
-                } else {
-                    view = convertView;
-                }
-                text = (TextView) view.findViewById(R.id.topicTextView);
-            }else {
-                if (convertView == null) {
-                    view = (View) inflater.inflate(R.layout.header, null);
-                } else {
-                    view = convertView;
-                }
-                text = (TextView) view.findViewById(R.id.separator);
-            }
-            text.setText(sentence);
-            return view;
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SugarContext.init(this);
         setContentView(R.layout.activity_catalog);
-        List<TopicHeader> topics = TopicHeader.findWithQuery(TopicHeader.class, "SELECT DISTINCT Topic,SubTopic FROM " + tb_name);
+        List<TopicHeader> topics = TopicHeader.findWithQuery(TopicHeader.class, "SELECT * FROM " + tb_name);
         ArrayList<Advanced> advancedTopics = new ArrayList<>();
         boolean newTopic = false;
         String header = "";
@@ -97,11 +54,23 @@ public class TopicSelect extends AppCompatActivity {
                 advancedTopics.add(new Advanced(Advanced.TOPIC, topics.get(i).SubTopics));
             }
         }
+        final Intent intent = new Intent(this, Player.class);
         TextView textView = (TextView) findViewById(R.id.CatalogtextView);
-        ListView catalogList = (ListView) findViewById(R.id.CataloglistView);
+        final ListView catalogList = (ListView) findViewById(R.id.CataloglistView);
         textView.setText("Select Topic");
         TwoTextArrayAdapter adapter = new TwoTextArrayAdapter(getApplicationContext(), advancedTopics);
         catalogList.setAdapter(adapter);
+        catalogList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Advanced advanced = (Advanced) catalogList.getItemAtPosition(position);
+                if(advanced.type == Advanced.TOPIC)
+                {
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        });
     }
 
 }
