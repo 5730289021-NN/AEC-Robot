@@ -1,17 +1,11 @@
 package com.oaksmuth.pittayaaec.data;
 
-import com.orm.SugarRecord;
-
 /**
  * Created by Oak on 6/3/2559.
  */
-public class Data extends SugarRecord {
+public class Data {
     //ID	Topic	Subtopic	Number	Question	Answer	English 1	Thai 1	English 2	Thai 2	English 3	Thai 3	English 4	Thai 4	English 5	Thai 5
-    private long ID;
-    public Long getId() {
-        return ID;
-    }
-
+    int ID;
     String Topic;
     String SubTopic;
     int Number;

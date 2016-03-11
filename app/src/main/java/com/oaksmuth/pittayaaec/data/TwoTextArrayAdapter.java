@@ -6,8 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import com.oaksmuth.pittayaaec.activities.TopicSelect;
-
 import java.util.List;
 
 /**

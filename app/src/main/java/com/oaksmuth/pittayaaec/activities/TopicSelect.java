@@ -1,9 +1,9 @@
 package com.oaksmuth.pittayaaec.activities;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -12,11 +12,8 @@ import android.widget.TextView;
 import com.oaksmuth.pittayaaec.R;
 import com.oaksmuth.pittayaaec.data.Advanced;
 import com.oaksmuth.pittayaaec.data.TwoTextArrayAdapter;
-import com.orm.SugarContext;
-import com.orm.SugarRecord;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Oak on 14/2/2559.
@@ -26,32 +23,42 @@ import java.util.List;
 
 
 public class TopicSelect extends AppCompatActivity {
-    private static final String tb_name = "sqlite_sequence";
+    private static final String tb_name = "Data";
 
-    public class TopicHeader extends SugarRecord {
+    public class TopicHeader {
         String Topic;
-        String SubTopics;
+        String SubTopic;
+        public TopicHeader(String Topic, String SubTopic){
+            this.Topic = Topic;
+            this.SubTopic = SubTopic;
+        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SugarContext.init(this);
         setContentView(R.layout.activity_catalog);
-        List<TopicHeader> topics = TopicHeader.findWithQuery(TopicHeader.class, "SELECT * FROM " + tb_name);
+
+        Cursor cursor = Splash.helper.rawQuery("SELECT DISTINCT Topic, SubTopic FROM Data",null);
+
+        ArrayList<TopicHeader> topics = new ArrayList<TopicHeader>();
+
+        if (cursor != null && cursor.moveToFirst()){ //make sure you got results, and move to first row
+            do{
+                topics.add(new TopicHeader(cursor.getString(0),cursor.getString(1)));
+            } while (cursor.moveToNext()); //move to next row in the query result
+        }
+
         ArrayList<Advanced> advancedTopics = new ArrayList<>();
-        boolean newTopic = false;
-        String header = "";
         for(int i = 0;i < topics.size(); i++)
         {
             if(advancedTopics.isEmpty() || !topics.get(i).Topic.equals(topics.get(i-1).Topic)) {
-                header = topics.get(i).Topic;
                 advancedTopics.add(new Advanced(Advanced.HEADER, topics.get(i).Topic));
-                advancedTopics.add(new Advanced(Advanced.TOPIC, topics.get(i).SubTopics));
+                advancedTopics.add(new Advanced(Advanced.TOPIC, topics.get(i).SubTopic));
             }
             else
             {
-                advancedTopics.add(new Advanced(Advanced.TOPIC, topics.get(i).SubTopics));
+                advancedTopics.add(new Advanced(Advanced.TOPIC, topics.get(i).SubTopic));
             }
         }
         final Intent intent = new Intent(this, Player.class);
