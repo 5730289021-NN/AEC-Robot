@@ -96,7 +96,14 @@ public class Player extends AppCompatActivity{
                 {
                     playButton.setBackgroundResource(R.drawable.play);
                     tts.stop();
-                    isQuestion = !isQuestion;
+                    if(!isQuestion)//Not question -> Question
+                    {
+                        isQuestion = true;
+                    }else//Question(Next Question) -> Go Back to Last Answer
+                    {
+                        isQuestion = false;
+                        playingAt--;
+                    }
                     isPlaying = false;
                 }else{
                     playButton.setBackgroundResource(R.drawable.pause);
@@ -111,7 +118,6 @@ public class Player extends AppCompatActivity{
             public void onClick(View v) {
                 tts.stop();
                 playingAt--;
-                isQuestion = true;
             }
         });
 
@@ -120,8 +126,6 @@ public class Player extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 tts.stop();
-                playingAt++;
-                isQuestion = true;
             }
         });
     }
@@ -180,16 +184,22 @@ public class Player extends AppCompatActivity{
                 public void run() {
                     TextView textTextView = new TextView(context);
                     if (isQuestion) {
-                        textTextView.setText("Q: " + values[0]);
+                        textTextView.setText("Question\t" + (playingAt + 1) + "\t:\t" + values[0] + "\n");
                         isQuestion = false;
                     } else {
-                        textTextView.setText("A: " + values[0]);
+                        textTextView.setText("Answer\t" + (playingAt + 1) + "\t:\t" + values[0] + "\n");
                         isQuestion = true;
                     }
                     textTextView.setTextColor(Color.BLACK);
                     textLayout.addView(textTextView);
                 }
             });
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Intent intent = new Intent();
         }
     }
     @Override
