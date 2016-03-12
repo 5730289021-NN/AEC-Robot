@@ -1,13 +1,16 @@
 package com.oaksmuth.pittayaaec.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.oaksmuth.pittayaaec.R;
 import com.oaksmuth.pittayaaec.data.Advanced;
@@ -24,6 +27,7 @@ import java.util.ArrayList;
 
 public class TopicSelect extends AppCompatActivity {
     private static final String tb_name = "Data";
+    private Context context;
 
     public class TopicHeader {
         String Topic;
@@ -38,8 +42,8 @@ public class TopicSelect extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_catalog);
-
-        Cursor cursor = Splash.helper.rawQuery("SELECT DISTINCT Topic, SubTopic FROM Data",null);
+        context = this;
+        final Cursor cursor = Splash.helper.rawQuery("SELECT DISTINCT Topic, SubTopic FROM Data",null);
 
         ArrayList<TopicHeader> topics = new ArrayList<TopicHeader>();
 
@@ -49,7 +53,7 @@ public class TopicSelect extends AppCompatActivity {
             } while (cursor.moveToNext()); //move to next row in the query result
         }
 
-        ArrayList<Advanced> advancedTopics = new ArrayList<>();
+        final ArrayList<Advanced> advancedTopics = new ArrayList<>();
         for(int i = 0;i < topics.size(); i++)
         {
             if(advancedTopics.isEmpty() || !topics.get(i).Topic.equals(topics.get(i-1).Topic)) {
@@ -71,8 +75,24 @@ public class TopicSelect extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Advanced advanced = (Advanced) catalogList.getItemAtPosition(position);
-                if(advanced.type == Advanced.TOPIC)
+                if(advanced.type == Advanced.TOPIC)//Make sure it's not header
                 {
+                    //find its header
+                    String header = null;
+                    Log.i("Database","i = " + position);
+                    for(int i = position;i>=0;i--)
+                    {
+                        if(advancedTopics.get(i).type == Advanced.HEADER)
+                        {
+                            Log.i("Database", (advancedTopics.get(i).sentence + " is " + advancedTopics.get(i).type));
+                            header = advancedTopics.get(i).sentence;
+                            break;
+                        }
+                    }
+                    intent.putExtra("Topic", header);
+                    intent.putExtra("SubTopic", advanced.sentence);
+                    //Toast.makeText(context,"Topic: " + header + " SubTopic: " + advanced.sentence,Toast.LENGTH_LONG).show();
+                    Log.i("Database", "Topic: " + header + " SubTopic: " + advanced.sentence);
                     startActivity(intent);
                     finish();
                 }
