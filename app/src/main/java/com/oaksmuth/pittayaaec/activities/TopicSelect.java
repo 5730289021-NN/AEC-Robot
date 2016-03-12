@@ -100,4 +100,11 @@ public class TopicSelect extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = new Intent(context, ModeSelect.class);
+        startActivity(intent);
+        finish();
+    }
 }

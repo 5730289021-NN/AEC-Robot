@@ -28,21 +28,22 @@ import java.util.Locale;
  * 4rd Page of the Application
  */
 public class Player extends AppCompatActivity{
-    boolean isPlaying = false;
-    boolean ttsReady = false;
-    int row = 0;
-    int playingAt = 0;
-    boolean isStart = false;
-    boolean isQuestion = true;
-    TextToSpeech tts;
-    Context context;
-    LinearLayout textLayout;
+    private boolean isPlaying = false;
+    private int row = 0;
+    private int playingAt = 0;
+    private boolean isStart = false;
+    private boolean isQuestion = true;
+    private TextToSpeech tts;
+    private Context context;
+    private LinearLayout textLayout;
+    private PlayTTSTask ttsTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
         context = this;
+        ttsTask = new PlayTTSTask();
         //Get all data from Intent
         Intent intent = getIntent();
         final String topic = intent.getStringExtra("Topic");
@@ -84,12 +85,13 @@ public class Player extends AppCompatActivity{
         });
 
         //Initiate Buttons
+
         final ImageButton playButton = (ImageButton) findViewById(R.id.playImageButton);
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!isStart){
-                    new PlayTTSTask().execute(qas);
+                    ttsTask.execute(qas);
                     isStart = true;
                 }
                 if(isPlaying)
@@ -117,7 +119,10 @@ public class Player extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 tts.stop();
-                playingAt--;
+                if(playingAt > 0)
+                    playingAt--;
+                else
+                    onBackPressed();
             }
         });
 
@@ -170,8 +175,11 @@ public class Player extends AppCompatActivity{
                         }
                     }
                 }
+                if(isCancelled())
+                {
+                    return null;
+                }
             }
-            finish();
             return null;
         }
 
@@ -199,9 +207,19 @@ public class Player extends AppCompatActivity{
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            Intent intent = new Intent();
+            onBackPressed();
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        ttsTask.cancel(true);
+        Intent intent = new Intent(context, TopicSelect.class);
+        startActivity(intent);
+        finish();
+    }
+
     @Override
     public void onStop() {
         if (tts != null) {
@@ -218,206 +236,3 @@ public class Player extends AppCompatActivity{
         super.onDestroy();
     }
 }
-
-/*public class PlayerActivity extends AppCompatActivity{
-    private boolean speaking = true;
-    private boolean isQuestion = true;
-    private LinearLayout textLayout;
-    private TextView topicTextView;
-    private TextToSpeech tts;
-    private String text;
-    private ArrayList<Integer> chosen;
-    private int index = 0;
-    private String topic;
-    private ArrayList<Data> data;
-    private ImageButton playButton;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_player);
-        textLayout = (LinearLayout) findViewById(R.id.textLayout);
-        Intent intent = getIntent();
-        String mode = intent.getStringExtra("Mode");
-        topic = intent.getStringExtra("Topic");//Means Subtopic if advanced
-        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener(){
-            @Override
-            public void onInit (int status){
-
-            }
-        });
-        topicTextView = (TextView) findViewById(R.id.topicTextView);
-        TextView subTopicTextView = (TextView) findViewById(R.id.subTopicTextView);
-        if(mode.equals("0"))//Basic
-        {
-            topicTextView.setText(topic);
-            subTopicTextView.setText("");
-            data = Splash.data.basicData;
-            chosen = Splash.data.findIndexBasicTopic(topic);
-        }
-        else if(mode.equals("1"))//Advanced
-        {
-            topicTextView.setText(topic);
-            //TODO implement later
-            //subtopic
-            //data = Splash.data.advancedData;
-        }
-        ImageButton backwardButton = (ImageButton) findViewById(R.id.backwardImageButton);
-        backwardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-        playButton = (ImageButton) findViewById(R.id.playImageButton);
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(speaking) {
-                    playButton.setBackgroundResource(R.drawable.play);
-                    speaking = false;
-                }else
-                {
-                    playButton.setBackgroundResource(R.drawable.pause);
-                    speaking = true;
-                }
-            }
-        });
-        ImageButton forwardImageButton = (ImageButton) findViewById(R.id.forwardImageButton);
-        forwardImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                speaking = false;
-                playNextTopic();
-                speaking = true;
-                return;
-            }
-        });
-
-
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                while(true)
-                {
-                    try {
-                        Thread.sleep(100);
-                        if(speaking)
-                        {
-                            if(!tts.isSpeaking())
-                            {
-                                boolean speakingQuestion = isQuestion;
-                                String toSpeak = nextSentence();
-                                if(toSpeak == "null") {
-                                    if(!playNextTopic())
-                                    {
-                                        onBackPressed();
-                                        break;
-                                    }
-                                    Thread.sleep(2000);
-                                }
-                                tts.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
-                                if(speakingQuestion)
-                                    text = "Q : ";
-                                else
-                                    text = "A : ";
-                                text += toSpeak;
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        TextView textTextView = new TextView(getApplicationContext());
-                                        textTextView.setText(text);
-                                        textTextView.setTextColor(Color.BLACK);
-                                        textLayout.addView(textTextView);
-                                    }
-                                });
-                            }
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
-    }
-
-    public synchronized String nextSentence(){
-        if(chosen.size() == index)//not topic
-        {
-            return "null";
-        }
-        else//the same topic
-        {
-            if(isQuestion)
-            {
-                isQuestion = false;
-                if(data.get(chosen.get(index)).sQuestion.trim().isEmpty())
-                {
-                    return data.get(chosen.get(index)).question.trim();
-                }
-                else
-                {
-                    return (data.get(chosen.get(index)).question + ", " + data.get(chosen.get(index)).sQuestion).trim();
-                }
-            }
-            else
-            {
-                isQuestion = true;
-                if(data.get(chosen.get(index)).sAnswer.trim().isEmpty())
-                {
-                    index++;;
-                    return data.get(chosen.get(index - 1)).answer.trim();
-                }
-                else
-                {
-                    index++;;
-                    return (data.get(chosen.get(index - 1)).answer + ", " + data.get(chosen.get(index - 1)).sAnswer).trim();
-                }
-            }
-        }
-    }
-
-    public void onBackPressed(){
-        speaking = false;
-        tts.stop();
-        tts.shutdown();
-        super.onBackPressed();
-    }
-
-    public synchronized boolean playNextTopic(){
-        if(Splash.data.basicList.get(Splash.data.basicList.size() - 1).equals(topic))
-        {
-            return false;
-        }
-        else
-        {
-            for(int i = 0;i<Splash.data.basicList.size();i++)
-            {
-                if(Splash.data.basicList.get(i).equals(topic))
-                {
-                    isQuestion = true;
-                    topic = Splash.data.basicList.get(i+1);
-                    index = 0;
-                    chosen = Splash.data.findIndexBasicTopic(topic);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            topicTextView.setText(topic);
-                        }
-                    });
-                    return true;
-                }
-            }
-            return false;
-        }
-
-    }
-}
-
-* */
