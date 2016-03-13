@@ -1,14 +1,17 @@
 # PittayaAEC
 A Project for my Teacher
 
-0.8(12/3/2015)
+1.5(13/3/2016)
+Ask function is complete... all the work is almost done. DB is just need to be little repaired.
+
+0.8(12/3/2016)
 Another Biggest Change, Now the application is ready to be use as the Player function
 
-0.7(11/3/2015)
+0.7(11/3/2016)
 Biggest Change... Go back to Normal SQLite which is the easiest task for me.
 Now it could show up the Topics.
 
-0.5(9/3/2015)
+0.5(9/3/2016)
 Change Database from SugarORM to DBFlow (Pending).
 SugarORM is lack of backward prepopulate compatibility.
 
