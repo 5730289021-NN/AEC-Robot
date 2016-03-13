@@ -25,7 +25,7 @@ public class ModeSelect extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modeselect);
         context = this;
-        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+        //overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
         CardView catalogCard = (CardView) findViewById(R.id.catalogCard);
         catalogCard.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -66,9 +66,7 @@ public class TopicSelect extends AppCompatActivity {
             }
         }
         final Intent intent = new Intent(this, Player.class);
-        TextView textView = (TextView) findViewById(R.id.CatalogtextView);
         final ListView catalogList = (ListView) findViewById(R.id.CataloglistView);
-        textView.setText("Select Topic");
         TwoTextArrayAdapter adapter = new TwoTextArrayAdapter(getApplicationContext(), advancedTopics);
         catalogList.setAdapter(adapter);
         catalogList.setOnItemClickListener(new AdapterView.OnItemClickListener() {

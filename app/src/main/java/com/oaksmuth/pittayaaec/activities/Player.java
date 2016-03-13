@@ -14,11 +14,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.oaksmuth.pittayaaec.R;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -29,6 +32,7 @@ import java.util.Locale;
  */
 public class Player extends AppCompatActivity{
     private boolean isPlaying = false;
+    private boolean isFinished = false;
     private int row = 0;
     private int playingAt = 0;
     private boolean isStart = false;
@@ -36,12 +40,18 @@ public class Player extends AppCompatActivity{
     private TextToSpeech tts;
     private Context context;
     private LinearLayout textLayout;
+    private ScrollView scrollView;
     private PlayTTSTask ttsTask;
+    private DecimalFormat df;
+    private ImageButton playButton;
+    private TextView speedTextView;
+    private TextView pitchTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
+
         context = this;
         ttsTask = new PlayTTSTask();
         //Get all data from Intent
@@ -68,12 +78,18 @@ public class Player extends AppCompatActivity{
         //Initiate Layout for TextView
         textLayout = (LinearLayout) findViewById(R.id.textLayout);
 
+        //Initiate and Force Scroll Layout to be at bottom
+        scrollView = (ScrollView) findViewById(R.id.scrollView);
+
+        //Rename ActionBar
+        setTitle(topic + " : " + subTopic);
 
         //Initiate Topics TextView
+/*
         TextView topicTextView = (TextView) findViewById(R.id.topicTextView);
         topicTextView.setText(topic);
         TextView subTopicTextView = (TextView) findViewById(R.id.subTopicTextView);
-        subTopicTextView.setText(subTopic);
+        subTopicTextView.setText(subTopic);*/
 
         //Initiate TTS
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
@@ -83,13 +99,46 @@ public class Player extends AppCompatActivity{
                 tts.speak("Category is " + topic + "and Topic is " + subTopic, TextToSpeech.QUEUE_FLUSH, null);
             }
         });
+        //Initiate SeekBars
+        speedTextView = (TextView) findViewById(R.id.speedtextView);
+        pitchTextView = (TextView) findViewById(R.id.pitchtextView);
+        df = new DecimalFormat("0.00");
+        SeekBar speedSeekBar = (SeekBar) findViewById(R.id.speedSeekbar);
+        speedSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                float speedValue = Float.parseFloat(df.format((float) (Math.pow(2, (double) progress/50)/2)));
+                speedTextView.setText("Speed\t\t" + String.valueOf(speedValue) + "\t");
+                tts.setSpeechRate(speedValue);
+            }
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        SeekBar pitchSeekBar = (SeekBar) findViewById(R.id.pitchSeekbar);
+        pitchSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                float pitchValue = Float.parseFloat(df.format((float) (Math.pow(2, (double) progress/50)/2)));
+                pitchTextView.setText("Pitch\t\t" + String.valueOf(pitchValue) + "\t");
+                tts.setPitch(pitchValue);
+            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
 
         //Initiate Buttons
-
-        final ImageButton playButton = (ImageButton) findViewById(R.id.playImageButton);
+        playButton = (ImageButton) findViewById(R.id.playImageButton);
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(isFinished){
+                    onBackPressed();
+                }
                 if(!isStart){
                     ttsTask.execute(qas);
                     isStart = true;
@@ -148,11 +197,10 @@ public class Player extends AppCompatActivity{
     {
         @Override
         protected Void doInBackground(QA... params) {
-            Log.i("Do In Background","Initiated");
+            Log.i("Do In Background", "Initiated");
             while(true) {
                 try {
                     Thread.sleep(500);
-                    Log.i("Do In Background", "Sleeping");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -167,11 +215,10 @@ public class Player extends AppCompatActivity{
                             Log.i("Do In Background", "isPlaying & !tts.isSpeaking & !isQuestion");
                             tts.speak(params[playingAt].Answer, TextToSpeech.QUEUE_FLUSH, null);
                             publishProgress(params[playingAt].Answer);
-                            if(playingAt == row - 1)
+                            if(playingAt == row)
                             {
                                 break;
                             }
-                            playingAt++;
                         }
                     }
                 }
@@ -186,7 +233,6 @@ public class Player extends AppCompatActivity{
         @Override
         protected void onProgressUpdate(final String... values) {
             super.onProgressUpdate(values);
-            Log.i("on Progress Update", "Initiated");
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -197,7 +243,9 @@ public class Player extends AppCompatActivity{
                     } else {
                         textTextView.setText("Answer\t" + (playingAt + 1) + "\t:\t" + values[0] + "\n");
                         isQuestion = true;
+                        playingAt++;
                     }
+                    scrollView.fullScroll(View.FOCUS_DOWN);
                     textTextView.setTextColor(Color.BLACK);
                     textLayout.addView(textTextView);
                 }
@@ -207,7 +255,9 @@ public class Player extends AppCompatActivity{
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            onBackPressed();
+            isFinished = true;
+            playButton.setBackgroundResource(R.drawable.play);
+            isPlaying = false;
         }
     }
 

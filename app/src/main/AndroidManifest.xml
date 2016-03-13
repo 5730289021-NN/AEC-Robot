@@ -8,7 +8,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@android:style/Theme.Material.Light">
         <activity
             android:name=".activities.Splash"
             android:label="@string/app_name"
@@ -21,8 +21,8 @@
 
         <activity
             android:name=".activities.ModeSelect"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="Select Your Mode"
+            android:theme="@style/Theme.AppCompat.Light">
             <intent-filter>
                 <action android:name="android.intent.action.ALL_APPS" />
                 <category android:name="android.intent.category.HOME" />
@@ -31,8 +31,8 @@
 
         <activity
             android:name=".activities.TopicSelect"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="Select Topic"
+            android:theme="@style/Theme.AppCompat.Light">
             <intent-filter>
                 <action android:name="android.intent.action.ALL_APPS" />
                 <category android:name="android.intent.category.APP_CONTACTS" />
@@ -42,7 +42,7 @@
         <activity
             android:name=".activities.Player"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/Theme.AppCompat.Light"
             android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
