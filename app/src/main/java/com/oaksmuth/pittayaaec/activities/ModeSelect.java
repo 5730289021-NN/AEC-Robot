@@ -40,7 +40,9 @@ public class ModeSelect extends AppCompatActivity {
         askCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Ask what", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(context, Ask.class);
+                startActivity(intent);
+                finish();
             }
         });
     }
