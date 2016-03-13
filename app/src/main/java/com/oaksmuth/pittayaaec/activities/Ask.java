@@ -83,14 +83,8 @@ public class Ask extends AppCompatActivity{
                 speedTextView.setText("Speed\t\t" + String.valueOf(speedValue) + "\t");
                 tts.setSpeechRate(speedValue);
             }
-
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
         SeekBar pitchSeekBar = (SeekBar) findViewById(R.id.ask_pitchSeekbar);
         pitchSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
