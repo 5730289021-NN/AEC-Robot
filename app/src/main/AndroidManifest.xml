@@ -50,6 +50,16 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activities.Ask"
+            android:label="Ask"
+            android:theme="@style/Theme.AppCompat.Light"
+            android:configChanges="keyboardHidden|orientation|screenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.APP_MUSIC" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>
