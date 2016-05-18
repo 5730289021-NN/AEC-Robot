@@ -3,6 +3,7 @@ A Project for my Teacher
 
 1.5(13/3/2016)
 Ask function is complete... all the work is almost done. DB is just need to be little repaired.
+EDITED: The Paper of mistake is required to have a look
 
 0.8(12/3/2016)
 Another Biggest Change, Now the application is ready to be use as the Player function
