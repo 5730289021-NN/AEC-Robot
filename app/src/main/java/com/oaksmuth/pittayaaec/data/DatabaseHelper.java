@@ -17,9 +17,10 @@ import java.sql.SQLException;
 
 /**
  * Created by noraw on 10/3/2559.
+ * Last Edited 13 June 2016
  */
 public class DatabaseHelper extends SQLiteOpenHelper{
-    private static final String ENCODING = "UTF-8";
+    //private static final String ENCODING = "UTF-8";
     String DB_PATH = null;
     String targetPath = null;
 
@@ -27,12 +28,13 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     private final Context context;
 
-    private static String DB_NAME = "AEC.db";
+    private static String DB_NAME = "AEC2.db";
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, 1);
         this.context = context;
-        DB_PATH = "/data/data/" + context.getPackageName() + "/databases/";
+        //DB_PATH = "/data/data/" + context.getPackageName() + "/databases/";
+        DB_PATH = context.getDatabasePath(DB_NAME).getPath();
         targetPath = DB_PATH + DB_NAME;
     }
 
