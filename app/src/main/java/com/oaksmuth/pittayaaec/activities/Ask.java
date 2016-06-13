@@ -26,6 +26,7 @@ import java.util.Locale;
 
 /**
  * Created by Oak on 13/3/2559.
+ * Last Edited 6 May 2016
  */
 public class Ask extends AppCompatActivity{
     private final int SPEECH_RECOGNITION_CODE = 1;
@@ -34,7 +35,6 @@ public class Ask extends AppCompatActivity{
     private String said;
     private String fromDB;
     private Context context;
-    private Cursor cursor;
     private TextToSpeech tts;
     private TextView speedTextView;
     private TextView pitchTextView;
@@ -66,32 +66,33 @@ public class Ask extends AppCompatActivity{
                 }
             }
         });
+
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
                 tts.speak("Hello, ask me whatever you want to know",TextToSpeech.QUEUE_FLUSH,null);
             }
         });
-        speedTextView = (TextView) findViewById(R.id.ask_speedtextView);
-        pitchTextView = (TextView) findViewById(R.id.ask_pitchtextView);
-        df = new DecimalFormat("0.00");
-        SeekBar speedSeekBar = (SeekBar) findViewById(R.id.ask_speedSeekbar);
+        speedTextView = (TextView) findViewById(R.id.ask_speedTextView);
+        pitchTextView = (TextView) findViewById(R.id.ask_pitchTextView);
+        df = new DecimalFormat("#.##");
+        SeekBar speedSeekBar = (SeekBar) findViewById(R.id.ask_speedSeekBar);
         speedSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 float speedValue = Float.parseFloat(df.format((float) (Math.pow(2, (double) progress / 50) / 2)));
-                speedTextView.setText("Speed\t\t" + String.valueOf(speedValue) + "\t");
+                speedTextView.setText(String.valueOf(speedValue));
                 tts.setSpeechRate(speedValue);
             }
             public void onStartTrackingTouch(SeekBar seekBar) {}
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
-        SeekBar pitchSeekBar = (SeekBar) findViewById(R.id.ask_pitchSeekbar);
+        SeekBar pitchSeekBar = (SeekBar) findViewById(R.id.ask_pitchSeekBar);
         pitchSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 float pitchValue = Float.parseFloat(df.format((float) (Math.pow(2, (double) progress/50)/2)));
-                pitchTextView.setText("Pitch\t\t" + String.valueOf(pitchValue) + "\t");
+                pitchTextView.setText(String.valueOf(pitchValue));
                 tts.setPitch(pitchValue);
             }
             public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -110,13 +111,14 @@ public class Ask extends AppCompatActivity{
                         @Override
                         public void run() {
                             TextView textView = new TextView(context);
-                            textView.setText(simplifyText(said)[0] + "\n");
+                            String simp = simplifyText(said)[0] + "\n";
+                            textView.setText(simp);
                             textView.setTextColor(Color.BLACK);
                             linearLayout.addView(textView);
                             scrollView.fullScroll(View.FOCUS_DOWN);
                         }
                     });
-                    cursor = Splash.helper.rawQuery("SELECT Answer from Data WHERE Question = ?", simplifyText(said));
+                    Cursor cursor = Splash.helper.rawQuery("SELECT Answer from Data WHERE Question = ?", simplifyText(said));
                     if(cursor.getCount() == 0)
                     {
                         fromDB = "Sorry, I don't know";
@@ -130,7 +132,8 @@ public class Ask extends AppCompatActivity{
                         @Override
                         public void run() {
                             TextView textView = new TextView(context);
-                            textView.setText(fromDB + "\n");
+                            String dbData = fromDB + "\n";
+                            textView.setText(dbData);
                             linearLayout.addView(textView);
                             scrollView.fullScroll(View.FOCUS_DOWN);
                         }
