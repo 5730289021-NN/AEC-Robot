@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.oaksmuth.pittayaaecrobot.CatalogActivity">
+    tools:context="com.oaksmuth.pittayaaec.activities.TopicSelect">
+
+    <SearchView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/searchView"
+        android:queryHint="Search topics..."/>
+    
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/CataloglistView" />
 
-</RelativeLayout>
+
+
+</LinearLayout>

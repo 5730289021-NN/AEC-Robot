@@ -100,15 +100,15 @@ public class Player extends AppCompatActivity{
             }
         });
         //Initiate SeekBars
-        speedTextView = (TextView) findViewById(R.id.speedtextView);
-        pitchTextView = (TextView) findViewById(R.id.pitchtextView);
+        speedTextView = (TextView) findViewById(R.id.speedTextView);
+        pitchTextView = (TextView) findViewById(R.id.pitchTextView);
         df = new DecimalFormat("0.00");
-        SeekBar speedSeekBar = (SeekBar) findViewById(R.id.speedSeekbar);
+        SeekBar speedSeekBar = (SeekBar) findViewById(R.id.speedSeekBar);
         speedSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 float speedValue = Float.parseFloat(df.format((float) (Math.pow(2, (double) progress/50)/2)));
-                speedTextView.setText("Speed\t\t" + String.valueOf(speedValue) + "\t");
+                speedTextView.setText(String.valueOf(speedValue));
                 tts.setSpeechRate(speedValue);
             }
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -118,12 +118,12 @@ public class Player extends AppCompatActivity{
 
             }
         });
-        SeekBar pitchSeekBar = (SeekBar) findViewById(R.id.pitchSeekbar);
+        SeekBar pitchSeekBar = (SeekBar) findViewById(R.id.pitchSeekBar);
         pitchSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 float pitchValue = Float.parseFloat(df.format((float) (Math.pow(2, (double) progress/50)/2)));
-                pitchTextView.setText("Pitch\t\t" + String.valueOf(pitchValue) + "\t");
+                pitchTextView.setText(String.valueOf(pitchValue));
                 tts.setPitch(pitchValue);
             }
             public void onStartTrackingTouch(SeekBar seekBar) {}

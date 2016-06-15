@@ -5,16 +5,18 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.SearchView;
 import android.util.Log;
+
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.oaksmuth.pittayaaec.R;
 import com.oaksmuth.pittayaaec.data.Advanced;
 import com.oaksmuth.pittayaaec.data.TwoTextArrayAdapter;
+
 
 import java.util.ArrayList;
 
@@ -27,7 +29,12 @@ import java.util.ArrayList;
 
 public class TopicSelect extends AppCompatActivity {
     private static final String tb_name = "Data";
+    private SearchView sv;
+    private TwoTextArrayAdapter adapter;
+    private ListView catalogList;
     private Context context;
+    private ArrayList<TopicHeader> topics;
+
 
     public class TopicHeader {
         String Topic;
@@ -43,9 +50,9 @@ public class TopicSelect extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_catalog);
         context = this;
-        final Cursor cursor = Splash.helper.rawQuery("SELECT DISTINCT Topic, SubTopic FROM Data",null);
+        final Cursor cursor = Splash.helper.rawQuery("SELECT DISTINCT Topic, SubTopic FROM " + tb_name,null);
 
-        ArrayList<TopicHeader> topics = new ArrayList<TopicHeader>();
+        topics = new ArrayList<>();
 
         if (cursor != null && cursor.moveToFirst()){ //make sure you got results, and move to first row
             do{
@@ -66,8 +73,8 @@ public class TopicSelect extends AppCompatActivity {
             }
         }
         final Intent intent = new Intent(this, Player.class);
-        final ListView catalogList = (ListView) findViewById(R.id.CataloglistView);
-        TwoTextArrayAdapter adapter = new TwoTextArrayAdapter(getApplicationContext(), advancedTopics);
+        catalogList = (ListView) findViewById(R.id.CataloglistView);
+        adapter = new TwoTextArrayAdapter(getApplicationContext(), advancedTopics);
         catalogList.setAdapter(adapter);
         catalogList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -96,6 +103,47 @@ public class TopicSelect extends AppCompatActivity {
                 }
             }
         });
+        sv = (SearchView) findViewById(R.id.searchView);
+        sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //Toast.makeText(context,query,Toast.LENGTH_SHORT).show();
+                ArrayList<TopicHeader> th = new ArrayList<>();
+                ArrayList<Advanced> advanced2 = new ArrayList<>();
+                for(TopicHeader s:topics)
+                {
+                    if(s.SubTopic.contains(query))
+                    {
+                        th.add(s);
+                    }
+                }
+                for(int i = 0;i < th.size(); i++)
+                {
+                    if(advanced2.isEmpty() || !th.get(i).Topic.equals(th.get(i-1).Topic)) {
+                        advanced2.add(new Advanced(Advanced.HEADER, th.get(i).Topic));
+                        advanced2.add(new Advanced(Advanced.TOPIC, th.get(i).SubTopic));
+                    }
+                    else
+                    {
+                        advanced2.add(new Advanced(Advanced.TOPIC, th.get(i).SubTopic));
+                    }
+                }
+                adapter = new TwoTextArrayAdapter(getApplicationContext(), advanced2);
+                catalogList.setAdapter(adapter);
+
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if(newText.isEmpty())
+                {
+                    adapter = new TwoTextArrayAdapter(getApplicationContext(), advancedTopics);
+                    catalogList.setAdapter(adapter);
+                }
+                return true;
+            }
+        });
     }
 
     @Override
@@ -105,4 +153,5 @@ public class TopicSelect extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
 }
