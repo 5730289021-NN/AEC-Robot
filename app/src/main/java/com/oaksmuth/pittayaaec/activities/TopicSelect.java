@@ -110,7 +110,7 @@ public class TopicSelect extends AppCompatActivity {
                 //Toast.makeText(context,query,Toast.LENGTH_SHORT).show();
                 ArrayList<TopicHeader> th = new ArrayList<>();
                 ArrayList<Advanced> advanced2 = new ArrayList<>();
-                for(TopicHeader s:topics)
+                for(TopicHeader s:topics)//u
                 {
                     if(s.SubTopic.contains(query))
                     {
