@@ -18,11 +18,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="16dp"
-            android:paddingBottom="24dp"
+            android:paddingBottom="48dp"
             android:orientation="vertical"
-            android:id="@+id/textLayout">
+            android:id="@+id/textLayout"
+            >
         </LinearLayout>
     </ScrollView>
+
+    <TextView
+        android:id="@+id/initialTag"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="Initializing..."
+        android:textSize="30sp"/>
 
     <LinearLayout
         android:layout_width="match_parent"

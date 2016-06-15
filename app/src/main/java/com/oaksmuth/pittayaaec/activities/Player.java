@@ -46,6 +46,7 @@ public class Player extends AppCompatActivity{
     private ImageButton playButton;
     private TextView speedTextView;
     private TextView pitchTextView;
+    private TextView initialTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +67,7 @@ public class Player extends AppCompatActivity{
         Cursor cursor = Splash.helper.rawQuery("SELECT Question, Answer from Data WHERE Topic = ? and SubTopic = ?", params);
         //Retrieve data from the query
         row = cursor.getCount();
-        Toast.makeText(this,String.valueOf(row),Toast.LENGTH_LONG).show();
+        Toast.makeText(this,"Amount: " + String.valueOf(row),Toast.LENGTH_LONG).show();
         Log.i("Database","Collected " + row + " rows");
         final QA[] qas = new QA[row];//QA is Question and Answer
         if (cursor != null && cursor.moveToFirst()){ //make sure you got results, and move to first row
@@ -91,12 +92,23 @@ public class Player extends AppCompatActivity{
         TextView subTopicTextView = (TextView) findViewById(R.id.subTopicTextView);
         subTopicTextView.setText(subTopic);*/
 
+        initialTextView = (TextView) findViewById(R.id.initialTag);
         //Initiate TTS
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                tts.setLanguage(Locale.ENGLISH);
-                tts.speak("Category is " + topic + "and Topic is " + subTopic, TextToSpeech.QUEUE_FLUSH, null);
+                if(status == TextToSpeech.SUCCESS) {
+                    tts.setLanguage(Locale.ENGLISH);
+                    tts.speak("Category is " + topic + "and Topic is " + subTopic, TextToSpeech.QUEUE_FLUSH, null);
+                    while(!tts.isSpeaking()) {
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    initialTextView.setVisibility(View.INVISIBLE);
+                }
             }
         });
         //Initiate SeekBars
@@ -206,6 +218,7 @@ public class Player extends AppCompatActivity{
                 }
                 if (isPlaying) {
                     if (!tts.isSpeaking()) {
+                        if(playingAt == row) break;
                         if(isQuestion) {
                             Log.i("Do In Background", "isPlaying & !tts.isSpeaking & isQuestion");
                             tts.speak(params[playingAt].Question, TextToSpeech.QUEUE_FLUSH, null);
@@ -215,10 +228,6 @@ public class Player extends AppCompatActivity{
                             Log.i("Do In Background", "isPlaying & !tts.isSpeaking & !isQuestion");
                             tts.speak(params[playingAt].Answer, TextToSpeech.QUEUE_FLUSH, null);
                             publishProgress(params[playingAt].Answer);
-                            if(playingAt == row)
-                            {
-                                break;
-                            }
                         }
                     }
                 }

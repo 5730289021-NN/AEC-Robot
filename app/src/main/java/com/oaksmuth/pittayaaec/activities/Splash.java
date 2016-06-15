@@ -19,9 +19,10 @@ import java.util.Locale;
  * 1st Page of the Application
  */
 public class Splash extends AppCompatActivity{
-    private static final String DB_NAME  = "AEC.db";
+    private static final String DB_NAME  = "AEC2.db";
     private static String DB_PATH = null;
     public static DatabaseHelper helper;
+    public static TextToSpeech tts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

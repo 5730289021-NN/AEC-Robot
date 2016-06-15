@@ -112,7 +112,7 @@ public class TopicSelect extends AppCompatActivity {
                 ArrayList<Advanced> advanced2 = new ArrayList<>();
                 for(TopicHeader s:topics)//u
                 {
-                    if(s.SubTopic.contains(query))
+                    if(s.SubTopic.toLowerCase().contains(query.toLowerCase()))
                     {
                         th.add(s);
                     }

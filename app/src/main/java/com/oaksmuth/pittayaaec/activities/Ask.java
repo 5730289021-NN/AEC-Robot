@@ -38,6 +38,7 @@ public class Ask extends AppCompatActivity{
     private TextToSpeech tts;
     private TextView speedTextView;
     private TextView pitchTextView;
+    private TextView initialTextView;
     private DecimalFormat df;
 
     @Override
@@ -67,10 +68,22 @@ public class Ask extends AppCompatActivity{
             }
         });
 
+        initialTextView = (TextView) findViewById(R.id.ask_initialTag);
+
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                tts.speak("Hello, ask me whatever you want to know",TextToSpeech.QUEUE_FLUSH,null);
+                if(status == TextToSpeech.SUCCESS) {
+                    tts.speak("Hello, ask me whatever you want to know", TextToSpeech.QUEUE_FLUSH, null);
+                    while(!tts.isSpeaking()) {
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    initialTextView.setVisibility(View.INVISIBLE);
+                }
             }
         });
         speedTextView = (TextView) findViewById(R.id.ask_speedTextView);
@@ -118,7 +131,7 @@ public class Ask extends AppCompatActivity{
                             scrollView.fullScroll(View.FOCUS_DOWN);
                         }
                     });
-                    Cursor cursor = Splash.helper.rawQuery("SELECT Answer from Data WHERE Question = ?", simplifyText(said));
+                    Cursor cursor = Splash.helper.rawQuery("SELECT Answer FROM Data WHERE Question = ? COLLATE NOCASE", simplifyText(said));
                     if(cursor.getCount() == 0)
                     {
                         fromDB = "Sorry, I don't know";
