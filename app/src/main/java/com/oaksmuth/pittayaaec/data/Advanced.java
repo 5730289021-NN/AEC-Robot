@@ -39,14 +39,14 @@ public class Advanced{
         TextView text;
         if(type) {
             if (convertView == null) {
-                view = (View) inflater.inflate(R.layout.topic, null);
+                view = inflater.inflate(R.layout.topic, null);
             } else {
                 view = convertView;
             }
             text = (TextView) view.findViewById(R.id.topicTextView);
         }else {
             if (convertView == null) {
-                view = (View) inflater.inflate(R.layout.header, null);
+                view = inflater.inflate(R.layout.header, null);
             } else {
                 view = convertView;
             }
