@@ -1,6 +1,9 @@
 # PittayaAEC
 A Project for my Teacher
 
+1.6(29/8/2016)
+Rechecking the whole App. Seemed completed.
+
 1.5(13/3/2016)
 Ask function is complete... all the work is almost done. DB is just need to be little repaired.
 EDITED: The Paper of mistake is required to have a look
