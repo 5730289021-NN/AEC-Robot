@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">Pittaya AEC</string>
+    <string name="app_name">AEC Robot</string>
+    <string name="app_label">A Robot for AEC Communication through Practical Words and Expression</string>
     <string name="action_settings">Settings</string>
     <string name="pitch">Pitch</string>
     <string name="speed">Speed</string>
