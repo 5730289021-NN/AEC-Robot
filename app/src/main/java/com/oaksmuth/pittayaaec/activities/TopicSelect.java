@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
+import android.support.annotation.IntegerRes;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.SearchView;
 import android.util.Log;
@@ -19,6 +21,8 @@ import com.oaksmuth.pittayaaec.data.TwoTextArrayAdapter;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * Created by Oak on 14/2/2559.
@@ -34,7 +38,8 @@ public class TopicSelect extends AppCompatActivity {
     private ListView catalogList;
     private Context context;
     private ArrayList<TopicHeader> topics;
-
+    private TextToSpeech tts;
+    String topicno;
 
     public class TopicHeader {
         String Topic;
@@ -45,11 +50,31 @@ public class TopicSelect extends AppCompatActivity {
         }
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_catalog);
         context = this;
+
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status == TextToSpeech.SUCCESS) {
+                    tts.setLanguage(Locale.ENGLISH);
+                    //tts.speak("Category is " + topic + "and Topic is " + subTopic, TextToSpeech.QUEUE_FLUSH, null);
+                    while(!tts.isSpeaking()) {
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+            }
+        }});
+
+
+
         final Cursor cursor = Splash.helper.rawQuery("SELECT DISTINCT Topic, SubTopic FROM " + tb_name,null);
 
         topics = new ArrayList<>();
@@ -64,7 +89,7 @@ public class TopicSelect extends AppCompatActivity {
         for(int i = 0;i < topics.size(); i++)
         {
             if(advancedTopics.isEmpty() || !topics.get(i).Topic.equals(topics.get(i-1).Topic)) {
-                advancedTopics.add(new Advanced(Advanced.HEADER, topics.get(i).Topic));
+                //advancedTopics.add(new Advanced(Advanced.HEADER, topics.get(i).Topic)); It'll be much easier
                 advancedTopics.add(new Advanced(Advanced.TOPIC, topics.get(i).SubTopic));
             }
             else
@@ -94,12 +119,44 @@ public class TopicSelect extends AppCompatActivity {
                             break;
                         }
                     }
-                    intent.putExtra("Topic", header);
-                    intent.putExtra("SubTopic", advanced.sentence);
+                    //intent.putExtra("Topic", header);
+                    //intent.putExtra("SubTopic", advanced.sentence);
                     //Toast.makeText(context,"Topic: " + header + " SubTopic: " + advanced.sentence,Toast.LENGTH_LONG).show();
                     Log.i("Database", "Topic: " + header + " SubTopic: " + advanced.sentence);
-                    startActivity(intent);
-                    finish();
+                    /****************Special Edit Here*********************************************/
+                    Toast.makeText(context,"Start Converting",Toast.LENGTH_SHORT).show();
+                    String[] params = new String[2];
+                    params[0] = header;
+                    params[1] = advanced.sentence;
+                    Cursor cursor = Splash.helper.rawQuery("SELECT _id, Question, Answer from Data WHERE Topic = ? and SubTopic = ?", params);
+                    int row = cursor.getCount();
+
+                    final QA[] qas = new QA[row];//QA is Question and Answer
+                    if (cursor != null && cursor.moveToFirst()){ //make sure you got results, and move to first row
+                        int i = 0;
+                        do{
+                            qas[i++] = (new QA(cursor.getString(0),cursor.getString(1),cursor.getString(2)));
+                        } while (cursor.moveToNext()); //move to next row in the query result
+                    }
+
+                    String textToConvert = "Category is " + header + "and Topic is " + advanced.sentence;
+
+                    for(int m = 0 ;m<qas.length ; m++) {
+                        textToConvert += ordinal(Integer.parseInt(qas[m].id) + 1) + " ";
+                        textToConvert += qas[m].Question + " ";
+                        textToConvert += qas[m].Answer + " ";
+                    }
+
+                    HashMap<String, String> myHashRender = new HashMap();
+                    String destinationFileName = "/sdcard/" + (position+1) + ".wav";
+                    myHashRender.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, textToConvert);
+                    tts.synthesizeToFile(textToConvert, myHashRender, destinationFileName);
+
+                    Toast.makeText(context,"Finished, file save at "+ destinationFileName ,Toast.LENGTH_SHORT).show();
+
+                    /******************************************************************************/
+                    //startActivity(intent);
+                    //finish();
                 }
             }
         });
@@ -152,6 +209,30 @@ public class TopicSelect extends AppCompatActivity {
         Intent intent = new Intent(context, ModeSelect.class);
         startActivity(intent);
         finish();
+    }
+    private class QA{
+        public String Question;
+        public String Answer;
+        public String id;
+        public QA(String id, String Question, String Answer)
+        {
+            this.id = id;
+            this.Question = Question;
+            this.Answer = Answer;
+        }
+    }
+
+    public static String ordinal(int i) {
+        String[] sufixes = new String[] { "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th" };
+        switch (i % 100) {
+            case 11:
+            case 12:
+            case 13:
+                return i + "th";
+            default:
+                return i + sufixes[i % 10];
+
+        }
     }
 
 }
