@@ -68,7 +68,7 @@ public class Ask extends AppCompatActivity{
             }
         });
 
-        initialTextView = (TextView) findViewById(R.id.ask_initialTag);
+        initialTextView = (TextView) findViewById(R.id.ask_initialTag);//initial branch commit
 
         tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
