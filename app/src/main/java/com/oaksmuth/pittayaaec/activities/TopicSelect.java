@@ -146,9 +146,9 @@ public class TopicSelect extends AppCompatActivity {
                 String textToConvert = "Category is " + topics.get(position).Topic + "... and Topic is " + topics.get(position).SubTopic + " ... ";
 
                 for (int m = 0; m < qas.length; m++) {
-                    textToConvert += " ... " + ordinal(Integer.parseInt(qas[m].id)) + " ... ";
-                    textToConvert += " ... " + qas[m].Question + " ... ";
-                    textToConvert += " ... " + qas[m].Answer + " ... ";
+                    textToConvert += " ... . : " + ordinal(Integer.parseInt(qas[m].id)) + " ... . : ";
+                    textToConvert += " ... . : " + qas[m].Question + " ... . : ";
+                    textToConvert += " ... . : " + qas[m].Answer + " ... . : ";
                 }
                 Log.i("Thread", "Added to text convert position file " + (position + 1) + ".wav");
 
