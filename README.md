@@ -1,6 +1,8 @@
 # PittayaAEC
 A Project for my Teacher
 
+SoundCreator Branch is the Default working application
+
 1.6(29/8/2016)
 Rechecking the whole App. Seemed completed.
 
